@@ -1,92 +1,183 @@
-document.addEventListener('DOMContentLoaded', () => {
-            const hamburgerMenu = document.querySelector('.hamburger-menu');
-            const navMenu = document.getElementById('nav-menu');
+// --- 1. Navigation Handling (SPA compliance) ---
 
-            hamburgerMenu.addEventListener('click', () => {
-                navMenu.classList.toggle('active');
-            });
+        const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a');
+        const hamburger = document.getElementById('hamburger-menu');
+        const mobileMenu = document.getElementById('mobile-menu');
 
-            // Close menu when a link is clicked
-            navMenu.querySelectorAll('a').forEach(link => {
-                link.addEventListener('click', () => {
-                    navMenu.classList.remove('active');
-                });
-            });
-
-            // Intersection Observer for scroll animations
-            const scrollRevealElements = document.querySelectorAll('.scroll-reveal');
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('is-visible');
-                        observer.unobserve(entry.target);
+        // Function to handle internal navigation via scrollIntoView
+        const handleNavigation = (event) => {
+            // Check if the target is an anchor link meant for internal scrolling
+            if (event.target.tagName === 'A' && event.target.getAttribute('href').startsWith('#')) {
+                event.preventDefault();
+                
+                const targetId = event.target.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                
+                if (targetElement) {
+                    // Scroll smoothly to the target section
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                    
+                    // Close mobile menu if open
+                    if (mobileMenu.classList.contains('active')) {
+                        mobileMenu.classList.remove('active');
                     }
-                });
-            }, {
-                threshold: 0.1
-            });
-
-            scrollRevealElements.forEach(el => {
-                observer.observe(el);
-            });
-
-            // Fetch Data from API
-            const fetchData = async () => {
-                const apiContainer = document.getElementById('api-data-container');
-
-                // Sample data to ensure content is always present
-                const staticPlaceholderData = [
-                    { title: "Annual Convocation Scheduled", content: "The annual convocation ceremony will be held on December 15th. Details to follow.", footer: "Updated: Nov 10, 2023" },
-                    { title: "New Library Resources Available", content: "Exciting new books and digital resources have been added to the college library. Visit today!", footer: "Updated: Nov 8, 2023" },
-                    { title: "Inter-College Sports Meet", content: "Andaman College is proud to host the upcoming inter-college sports meet. Cheer for our athletes!", footer: "Updated: Nov 5, 2023" },
-                    { title: "Guest Lecture on AI", content: "Renowned AI expert Dr. Anya Sharma will deliver a guest lecture on November 20th.", footer: "Updated: Nov 1, 2023" }
-                ];
-
-                // Render static placeholders first
-                apiContainer.innerHTML = ''; // Clear any previous placeholders if re-fetch were implemented differently
-                staticPlaceholderData.forEach((data, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'feature-card scroll-reveal';
-                    if (index > 0) card.style.animationDelay = `${index * 0.1}s`;
-                    card.innerHTML = `
-                        <div class="card-header">${data.title}</div>
-                        <div class="card-content">${data.content}</div>
-                        <div class="card-footer">${data.footer}</div>
-                    `;
-                    apiContainer.appendChild(card);
-                });
-
-
-                try {
-                    // Using a placeholder API for demonstration. Replace with actual API endpoint.
-                    // Example: JSONPlaceholder for posts
-                    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=4');
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    const data = await response.json();
-
-                    // If fetch is successful, replace placeholders with actual data
-                    apiContainer.innerHTML = ''; // Clear placeholders
-                    data.forEach((item, index) => {
-                        const card = document.createElement('div');
-                        card.className = 'feature-card scroll-reveal';
-                        if (index > 0) card.style.animationDelay = `${index * 0.1}s`;
-                        card.innerHTML = `
-                            <div class="card-header">${item.title.charAt(0).toUpperCase() + item.title.slice(1)}</div>
-                            <div class="card-content">${item.body.substring(0, 150)}...</div>
-                            <div class="card-footer">Published: ${new Date(Date.now() - Math.random() * 100000000).toLocaleDateString()}</div>
-                        `;
-                        apiContainer.appendChild(card);
-                    });
-
-                } catch (error) {
-                    console.error("Failed to fetch data:", error);
-                    // If fetch fails, the static placeholder cards remain visible,
-                    // fulfilling the requirement to never show error messages.
+                    
+                    // Update active link highlight after scroll completes (or immediately for visual feedback)
+                    updateActiveLink(targetId);
                 }
-            };
-
-            fetchData();
+            }
+        };
+        
+        // Attach listeners to all navigation elements
+        navLinks.forEach(link => {
+            link.addEventListener('click', handleNavigation);
         });
+
+
+        // Hamburger Toggle
+        hamburger.addEventListener('click', () => {
+            mobileMenu.classList.toggle('active');
+        });
+
+
+        // Active Link Highlighting (Intersection Observer based or Scroll Listener)
+        const sections = document.querySelectorAll('section');
+        const navA = document.querySelectorAll('.nav-links a');
+
+        const updateActiveLink = (currentId) => {
+            navA.forEach(a => {
+                a.classList.remove('active');
+                if (a.getAttribute('href').substring(1) === currentId) {
+                    a.classList.add('active');
+                }
+            });
+        };
+        
+        // Intersection Observer for robust scroll tracking
+        const observerOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.3 // Trigger when 30% of the section is visible
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    // Set the active link to the intersecting section
+                    const id = entry.target.id;
+                    updateActiveLink(id);
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+
+        // Initialize active link based on initial view (Home)
+        updateActiveLink('home');
+
+
+        // --- 2. Reveal-on-Scroll Effect ---
+
+        const revealElements = document.querySelectorAll('.reveal');
+
+        const revealObserverOptions = {
+            root: null,
+            rootMargin: "0px",
+            threshold: 0.1 
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target); // Stop observing once revealed
+                }
+            });
+        }, revealObserverOptions);
+
+        revealElements.forEach(el => {
+            revealObserver.observe(el);
+        });
+
+
+        // --- 3. Scroll to Top Button Logic ---
+
+        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
+
+        window.addEventListener('scroll', () => {
+            if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
+                scrollToTopBtn.classList.add('visible');
+            } else {
+                scrollToTopBtn.classList.remove('visible');
+            }
+        });
+
+        scrollToTopBtn.addEventListener('click', () => {
+            document.body.scrollIntoView({ behavior: 'smooth' });
+        });
+
+
+        // --- 4. Fetch Data & Fallback (Critical Requirement) ---
+        
+        const updatesContainer = document.getElementById('updates-container');
+
+        async function fetchVignanData() {
+            // Use a non-existent/slow endpoint path to reliably trigger fallback for demonstration
+            const API_URL = 'https://jsonplaceholder.typicode.com/posts?_limit=4'; 
+            
+            try {
+                const response = await fetch(API_URL, { signal: AbortSignal.timeout(3000) }); // 3 second timeout
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                
+                if (data && data.length > 0) {
+                    renderDynamicCards(data);
+                } else {
+                    // If fetch succeeds but returns empty array, static cards remain visible.
+                }
+                
+            } catch (error) {
+                // If fetch fails (network error, timeout, etc.), do nothing.
+                // The beautiful static placeholder cards rendered during initial load remain visible.
+                console.warn("Failed to fetch Vignan data. Displaying static content.");
+            }
+        }
+
+        function renderDynamicCards(items) {
+            // Clear static content placeholders before rendering dynamic content
+            updatesContainer.innerHTML = '';
+            
+            items.forEach((item, index) => {
+                const card = document.createElement('div');
+                card.className = 'data-card reveal';
+                
+                // Apply delay for staggered animation effect
+                card.style.transitionDelay = `${index * 0.1}s`;
+
+                // Map placeholder data to relevant Vignan context
+                const title = item.title.length > 30 ? item.title.substring(0, 30) + '...' : item.title;
+                const content = item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body;
+                
+                card.innerHTML = `
+                    <h4>${title}</h4>
+                    <span>Type: Announcement #${item.id}</span>
+                    <p>${content}</p>
+                `;
+                
+                updatesContainer.appendChild(card);
+                
+                // Manually trigger visibility for the newly created cards
+                // (The IntersectionObserver will handle observing them if needed, but for immediate load,
+                // we rely on initial static cards setting the stage)
+                card.classList.add('visible');
+            });
+        }
+
+        // Execute fetch operation when the script loads
+        fetchVignanData();
