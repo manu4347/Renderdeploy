@@ -1,183 +1,229 @@
-// --- 1. Navigation Handling (SPA compliance) ---
+document.addEventListener('DOMContentLoaded', () => {
+            const header = document.querySelector('.header');
+            const navLinks = document.querySelectorAll('.nav-list a');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-list a');
+            const sections = document.querySelectorAll('section[id]');
+            const hamburgerMenu = document.querySelector('.hamburger-menu');
+            const mobileNav = document.querySelector('.mobile-nav');
+            const revealElements = document.querySelectorAll('.reveal');
+            const eventsContainer = document.getElementById('events-container');
+            const facultyContainer = document.getElementById('faculty-container');
 
-        const navLinks = document.querySelectorAll('.nav-links a, .mobile-menu a');
-        const hamburger = document.getElementById('hamburger-menu');
-        const mobileMenu = document.getElementById('mobile-menu');
-
-        // Function to handle internal navigation via scrollIntoView
-        const handleNavigation = (event) => {
-            // Check if the target is an anchor link meant for internal scrolling
-            if (event.target.tagName === 'A' && event.target.getAttribute('href').startsWith('#')) {
-                event.preventDefault();
-                
-                const targetId = event.target.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
-                
-                if (targetElement) {
-                    // Scroll smoothly to the target section
-                    targetElement.scrollIntoView({ behavior: 'smooth' });
-                    
-                    // Close mobile menu if open
-                    if (mobileMenu.classList.contains('active')) {
-                        mobileMenu.classList.remove('active');
-                    }
-                    
-                    // Update active link highlight after scroll completes (or immediately for visual feedback)
-                    updateActiveLink(targetId);
-                }
-            }
-        };
-        
-        // Attach listeners to all navigation elements
-        navLinks.forEach(link => {
-            link.addEventListener('click', handleNavigation);
-        });
-
-
-        // Hamburger Toggle
-        hamburger.addEventListener('click', () => {
-            mobileMenu.classList.toggle('active');
-        });
-
-
-        // Active Link Highlighting (Intersection Observer based or Scroll Listener)
-        const sections = document.querySelectorAll('section');
-        const navA = document.querySelectorAll('.nav-links a');
-
-        const updateActiveLink = (currentId) => {
-            navA.forEach(a => {
-                a.classList.remove('active');
-                if (a.getAttribute('href').substring(1) === currentId) {
-                    a.classList.add('active');
-                }
-            });
-        };
-        
-        // Intersection Observer for robust scroll tracking
-        const observerOptions = {
-            root: null,
-            rootMargin: "0px",
-            threshold: 0.3 // Trigger when 30% of the section is visible
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    // Set the active link to the intersecting section
-                    const id = entry.target.id;
-                    updateActiveLink(id);
-                }
-            });
-        }, observerOptions);
-
-        sections.forEach(section => {
-            observer.observe(section);
-        });
-
-        // Initialize active link based on initial view (Home)
-        updateActiveLink('home');
-
-
-        // --- 2. Reveal-on-Scroll Effect ---
-
-        const revealElements = document.querySelectorAll('.reveal');
-
-        const revealObserverOptions = {
-            root: null,
-            rootMargin: "0px",
-            threshold: 0.1 
-        };
-
-        const revealObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    observer.unobserve(entry.target); // Stop observing once revealed
-                }
-            });
-        }, revealObserverOptions);
-
-        revealElements.forEach(el => {
-            revealObserver.observe(el);
-        });
-
-
-        // --- 3. Scroll to Top Button Logic ---
-
-        const scrollToTopBtn = document.getElementById('scrollToTopBtn');
-
-        window.addEventListener('scroll', () => {
-            if (document.body.scrollTop > 400 || document.documentElement.scrollTop > 400) {
-                scrollToTopBtn.classList.add('visible');
-            } else {
-                scrollToTopBtn.classList.remove('visible');
-            }
-        });
-
-        scrollToTopBtn.addEventListener('click', () => {
-            document.body.scrollIntoView({ behavior: 'smooth' });
-        });
-
-
-        // --- 4. Fetch Data & Fallback (Critical Requirement) ---
-        
-        const updatesContainer = document.getElementById('updates-container');
-
-        async function fetchVignanData() {
-            // Use a non-existent/slow endpoint path to reliably trigger fallback for demonstration
-            const API_URL = 'https://jsonplaceholder.typicode.com/posts?_limit=4'; 
-            
-            try {
-                const response = await fetch(API_URL, { signal: AbortSignal.timeout(3000) }); // 3 second timeout
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP error! status: ${response.status}`);
-                }
-                
-                const data = await response.json();
-                
-                if (data && data.length > 0) {
-                    renderDynamicCards(data);
+            // --- Header Scroll Effect ---
+            // Adds 'scrolled' class to header when page is scrolled down
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
                 } else {
-                    // If fetch succeeds but returns empty array, static cards remain visible.
+                    header.classList.remove('scrolled');
                 }
-                
-            } catch (error) {
-                // If fetch fails (network error, timeout, etc.), do nothing.
-                // The beautiful static placeholder cards rendered during initial load remain visible.
-                console.warn("Failed to fetch Vignan data. Displaying static content.");
-            }
-        }
-
-        function renderDynamicCards(items) {
-            // Clear static content placeholders before rendering dynamic content
-            updatesContainer.innerHTML = '';
-            
-            items.forEach((item, index) => {
-                const card = document.createElement('div');
-                card.className = 'data-card reveal';
-                
-                // Apply delay for staggered animation effect
-                card.style.transitionDelay = `${index * 0.1}s`;
-
-                // Map placeholder data to relevant Vignan context
-                const title = item.title.length > 30 ? item.title.substring(0, 30) + '...' : item.title;
-                const content = item.body.length > 100 ? item.body.substring(0, 100) + '...' : item.body;
-                
-                card.innerHTML = `
-                    <h4>${title}</h4>
-                    <span>Type: Announcement #${item.id}</span>
-                    <p>${content}</p>
-                `;
-                
-                updatesContainer.appendChild(card);
-                
-                // Manually trigger visibility for the newly created cards
-                // (The IntersectionObserver will handle observing them if needed, but for immediate load,
-                // we rely on initial static cards setting the stage)
-                card.classList.add('visible');
             });
-        }
 
-        // Execute fetch operation when the script loads
-        fetchVignanData();
+            // --- Hamburger Menu Toggle ---
+            // Toggles mobile navigation menu visibility
+            hamburgerMenu.addEventListener('click', () => {
+                hamburgerMenu.classList.toggle('active');
+                mobileNav.classList.toggle('open');
+                // Prevent scrolling when mobile menu is open
+                document.body.style.overflow = mobileNav.classList.contains('open') ? 'hidden' : '';
+            });
+
+            // --- Smooth Scrolling for Navigation Links ---
+            // Handles smooth scrolling to section IDs without modifying URL
+            const smoothScroll = (e) => {
+                e.preventDefault(); // Prevent default anchor link behavior (URL modification)
+                const targetId = e.target.getAttribute('href'); // Get the href (e.g., "#about")
+                const targetElement = document.querySelector(targetId);
+
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth'
+                    });
+
+                    // Close mobile menu if open after clicking a link
+                    if (mobileNav.classList.contains('open')) {
+                        hamburgerMenu.classList.remove('active');
+                        mobileNav.classList.remove('open');
+                        document.body.style.overflow = '';
+                    }
+                }
+            };
+
+            // Attach smoothScroll handler to all desktop nav links
+            navLinks.forEach(link => {
+                link.addEventListener('click', smoothScroll);
+            });
+
+            // Attach smoothScroll handler to all mobile nav links
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', smoothScroll);
+            });
+
+            // --- CTA Button Scroll ---
+            // Handles smooth scrolling for the "Explore Our Campus" button
+            const ctaButton = document.querySelector('.cta-button.scroll-to-link');
+            if (ctaButton) {
+                ctaButton.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const targetId = ctaButton.getAttribute('data-target'); // Uses data-target attribute
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        targetElement.scrollIntoView({ behavior: 'smooth' });
+                    }
+                });
+            }
+
+
+            // --- Active Nav Link Highlight on Scroll (Intersection Observer) ---
+            // Highlights the current active navigation link based on section visibility
+            const observerOptions = {
+                root: null, // Use the viewport as the root
+                rootMargin: '0px',
+                threshold: 0.7 // Section is considered active when 70% of it is visible
+            };
+
+            const sectionObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        // Remove 'active' from previously active link
+                        const currentActive = document.querySelector('.nav-list a.active');
+                        if (currentActive) {
+                            currentActive.classList.remove('active');
+                        }
+                        // Add 'active' to the link corresponding to the intersecting section
+                        const correspondingLink = document.querySelector(`.nav-list a[href="#${entry.target.id}"]`);
+                        if (correspondingLink) {
+                            correspondingLink.classList.add('active');
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            // Observe each section
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+
+            // --- Reveal-on-Scroll Effect (Intersection Observer) ---
+            // Adds 'active' class to elements when they enter the viewport
+            const revealObserverOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.15 // Element reveals when 15% of it is visible
+            };
+
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('active');
+                        observer.unobserve(entry.target); // Stop observing once revealed to optimize performance
+                    }
+                });
+            }, revealObserverOptions);
+
+            // Observe all elements with the 'reveal' class
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+
+
+            // --- Fetch API Data & Render Cards (with fallback) ---
+
+            // Helper function to create a card DOM element
+            const createCard = (type, data) => {
+                const card = document.createElement('div');
+                card.classList.add('card', 'glassmorphism', 'reveal'); // Apply styling and reveal animation class
+                if (type === 'event') {
+                    card.innerHTML = `
+                        <h3>${data.title}</h3>
+                        <p>${data.description}</p>
+                        <small>Date: ${data.date} | Time: ${data.time || ''} | Location: ${data.location || ''}</small>
+                    `;
+                } else if (type === 'faculty') {
+                    card.innerHTML = `
+                        <h3>${data.name}</h3>
+                        <p>${data.role}</p>
+                        <small>${data.email}</small>
+                    `;
+                }
+                return card;
+            };
+
+            // Fetch Events Data
+            const fetchEvents = async () => {
+                try {
+                    // Using JSONPlaceholder /posts as a mock API for events
+                    const response = await fetch('https://jsonplaceholder.typicode.com/posts?_limit=4');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+
+                    eventsContainer.innerHTML = ''; // Clear the static placeholder cards
+                    data.forEach((post, index) => {
+                        const eventData = {
+                            // Format API data to fit event structure
+                            title: post.title.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' '),
+                            description: post.body.substring(0, 100) + '...',
+                            date: `Oct ${26 + index}, 2024`, // Generate realistic dates
+                            time: `${18 + index}:00 PM`,
+                            location: ['College Auditorium', 'Sports Ground', 'Seminar Hall', 'Library Conference Room'][index % 4]
+                        };
+                        eventsContainer.appendChild(createCard('event', eventData));
+                    });
+                     // Re-observe newly added elements for reveal animation
+                     document.querySelectorAll('#events-container .reveal').forEach(el => {
+                        revealObserver.observe(el);
+                    });
+                } catch (error) {
+                    console.error('Failed to fetch events, showing static content:', error);
+                    // Crucial: If fetch fails, the initially rendered static placeholder cards remain visible.
+                    // No error message is displayed to the user.
+                }
+            };
+
+            // Fetch Faculty Data
+            const fetchFaculty = async () => {
+                try {
+                    // Using JSONPlaceholder /users as a mock API for faculty
+                    const response = await fetch('https://jsonplaceholder.typicode.com/users?_limit=4');
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+
+                    facultyContainer.innerHTML = ''; // Clear the static placeholder cards
+                    data.forEach((user, index) => {
+                        const facultyData = {
+                            // Format API data to fit faculty structure
+                            name: user.name,
+                            role: (index % 2 === 0 ? 'Professor' : 'Assistant Professor') + ', ' + user.company.name.split(' ')[0], // Generate realistic roles
+                            email: user.email
+                        };
+                        facultyContainer.appendChild(createCard('faculty', facultyData));
+                    });
+                    // Re-observe newly added elements for reveal animation
+                    document.querySelectorAll('#faculty-container .reveal').forEach(el => {
+                        revealObserver.observe(el);
+                    });
+                } catch (error) {
+                    console.error('Failed to fetch faculty, showing static content:', error);
+                    // Crucial: If fetch fails, the initially rendered static placeholder cards remain visible.
+                    // No error message is displayed to the user.
+                }
+            };
+
+            // Initial API fetch calls when DOM is ready
+            fetchEvents();
+            fetchFaculty();
+
+             // Set initial active link for the 'home' section on page load if it's in view
+             const homeSection = document.getElementById('home');
+             if (homeSection) {
+                 const homeLink = document.querySelector('.nav-list a[href="#home"]');
+                 if (homeLink) {
+                     // Check if the home section is sufficiently visible on load
+                     const rect = homeSection.getBoundingClientRect();
+                     if (rect.top <= window.innerHeight * observerOptions.threshold && rect.bottom >= window.innerHeight * observerOptions.threshold) {
+                         homeLink.classList.add('active');
+                     }
+                 }
+            }
+        });

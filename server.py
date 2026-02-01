@@ -1,4 +1,4 @@
-# Flask Backend for Vignan
+# Flask Backend for And
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
@@ -19,7 +19,7 @@ def add_data():
 
 @app.route('/api/health', methods=['GET'])
 def health():
-    return jsonify({'status': 'healthy', 'project': 'Vignan'})
+    return jsonify({'status': 'healthy', 'project': 'And'})
 
 if __name__ == '__main__':
     print('🚀 Backend running on http://localhost:5000')
