@@ -13,8 +13,14 @@ MONGO_DB_NAME = os.getenv("MONGO_DB_NAME", "vignan_lara")
 MONGO_COLLECTION = os.getenv("MONGO_MESSAGES_COLLECTION", "contact_messages")
 
 mongo_client = MongoClient(MONGO_URI) if MONGO_URI else None
-db = mongo_client[MONGO_DB_NAME] if mongo_client else None
-messages_col = db[MONGO_COLLECTION] if db else None
+
+if mongo_client is not None:
+    db = mongo_client[MONGO_DB_NAME]
+    messages_col = db[MONGO_COLLECTION]
+else:
+    db = None
+    messages_col = None
+
 
 data_store = []  # if you still want simple in-memory data
 
