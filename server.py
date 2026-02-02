@@ -40,7 +40,7 @@ def add_data():
 # ---- CONTACT MESSAGES -> MongoDB ----
 @app.route("/api/messages", methods=["POST"])
 def save_message():
-    if not messages_col:
+    if messages_col is None:
         # Mongo not configured; accept but don't persist
         return jsonify({"success": False, "error": "MongoDB not configured"}), 500
 
@@ -68,7 +68,7 @@ def health():
     return jsonify({
         "status": "healthy",
         "project": "vignan lara",
-        "mongo": bool(messages_col),
+        "mongo": messages_col is not None,
     })
 
 if __name__ == "__main__":
