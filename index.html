@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aditya School - Excellence in Education</title>
+    <style>
+        :root {
+            --primary-color: #0056b3; /* Dark blue */
+            --secondary-color: #007bff; /* Bright blue */
+            --accent-color: #28a745; /* Green */
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --white: #fff;
+            --border-color: #ddd;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            scroll-behavior: smooth;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+        }
+
+        header {
+            background: var(--primary-color);
+            color: var(--white);
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.2rem;
+        }
+
+        header h1 a {
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-wrap: wrap;
+        }
+
+        nav ul li {
+            margin-left: 20px;
+        }
+
+        nav ul li a {
+            color: var(--white);
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+            padding: 5px 0;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            color: var(--accent-color);
+        }
+
+        main {
+            padding: 20px 0;
+        }
+
+        section {
+            padding: 60px 0;
+            margin-bottom: 20px;
+            background-color: var(--white);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+        }
+
+        section h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 40px;
+            font-size: 2.5rem;
+            position: relative;
+        }
+
+        section h2::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--secondary-color);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .hero {
+            background: linear-gradient(rgba(0, 86, 179, 0.7), rgba(0, 86, 179, 0.7)), url('https://via.placeholder.com/1600x600/0056b3/ffffff?text=Aditya+School+Campus') no-repeat center center/cover;
+            color: var(--white);
+            text-align: center;
+            padding: 100px 20px;
+            border-radius: 0 0 8px 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .hero h2 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .hero p {
+            font-size: 1.5rem;
+            max-width: 800px;
+            margin: 0 auto 30px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 12px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: background 0.3s ease, transform 0.2s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background: #218838; /* Darker green */
+            transform: translateY(-2px);
+        }
+
+        .flex-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .grid-item {
+            flex: 1;
+            min-width: 300px;
+            background: var(--light-bg);
+            padding: 30px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .grid-item h3 {
+            color: var(--secondary-color);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+
+        .grid-item p {
+            color: #555;
+            font-size: 1rem;
+        }
+
+        form {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background: var(--light-bg);
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        form .form-group {
+            margin-bottom: 20px;
+        }
+
+        form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        form input[type="text"],
+        form input[type="email"],
+        form input[type="tel"],
+        form select,
+        form textarea {
+            width: calc(100% - 20px);
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        form input[type="text"]:focus,
+        form input[type="email"]:focus,
+        form input[type="tel"]:focus,
+        form select:focus,
+        form textarea:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+        }
+
+        form textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        form .btn {
+            width: 100%;
+            padding: 15px;
+            font-size: 1.1rem;
+        }
+
+        #response-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+            font-weight: bold;
+            display: none; /* Hidden by default */
+        }
+
+        #response-message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        #response-message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        footer {
+            background: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 40px;
+            border-radius: 8px 8px 0 0;
+        }
+
+        footer p {
+            margin: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            header .container {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            nav ul {
+                margin-top: 15px;
+                justify-content: center;
+            }
+
+            nav ul li {
+                margin: 0 10px;
+            }
+
+            .hero h2 {
+                font-size: 2.5rem;
+            }
+
+            .hero p {
+                font-size: 1.2rem;
+            }
+
+            section {
+                padding: 40px 0;
+            }
+
+            section h2 {
+                font-size: 2rem;
+            }
+
+            .grid-item {
+                min-width: unset;
+                width: 100%;
+            }
+
+            form {
+                padding: 20px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            header h1 {
+                font-size: 1.8rem;
+            }
+
+            nav ul li {
+                margin: 0 5px;
+            }
+
+            nav ul li a {
+                font-size: 0.9rem;
+            }
+
+            .hero h2 {
+                font-size: 2rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1><a href="#home">Aditya School</a></h1>
+            <nav>
+                <ul>
+                    <li><a href="#home">Home</a></li>
+                    <li><a href="#about">About Us</a></li>
+                    <li><a href="#academics">Academics</a></li>
+                    <li><a href="#admissions">Admissions</a></li>
+                    <li><a href="#contact">Contact</a></li>
+                    <li><a href="#" id="backend-data-button">Fetch Backend Data</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="home" class="hero">
+            <div class="container">
+                <h2>Welcome to Aditya School</h2>
+                <p>Nurturing young minds for a brighter future through holistic education and innovation.</p>
+                <a href="#admissions" class="btn">Apply Now</a>
+            </div>
+        </section>
+
+        <section id="about">
+            <div class="container">
+                <h2>About Aditya School</h2>
+                <div class="flex-grid">
+                    <div class="grid-item">
+                        <h3>Our Vision</h3>
+                        <p>To empower students with knowledge, skills, and values to become compassionate, responsible, and successful global citizens.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Our Mission</h3>
+                        <p>Provide a dynamic learning environment that fosters intellectual curiosity, creativity, critical thinking, and a love for lifelong learning.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Our Values</h3>
+                        <p>Integrity, Excellence, Respect, Innovation, Community, and Resilience are the pillars of our educational philosophy.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="academics">
+            <div class="container">
+                <h2>Academics at Aditya</h2>
+                <div class="flex-grid">
+                    <div class="grid-item">
+                        <h3>Curriculum</h3>
+                        <p>A comprehensive curriculum blending traditional wisdom with modern pedagogical approaches, focusing on conceptual understanding.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Faculty</h3>
+                        <p>Highly qualified and dedicated educators who are passionate about teaching and committed to student success.</p>
+                    </div>
+                    <div class="grid-item">
+                        <h3>Facilities</h3>
+                        <p>State-of-the-art classrooms, science labs, libraries, sports complexes, and digital learning centers for an enriched experience.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="admissions">
+            <div class="container">
+                <h2>Admissions</h2>
+                <p style="text-align: center; max-width: 800px; margin: 0 auto 30px;">
+                    We welcome prospective students and families to explore the enriching educational journey at Aditya School. Our admission process is designed to be straightforward and transparent.
+                </p>
+                <form id="admission-form">
+                    <div class="form-group">
+                        <label for="studentName">Student's Full Name:</label>
+                        <input type="text" id="studentName" name="studentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="parentName">Parent/Guardian's Full Name:</label>
+                        <input type="text" id="parentName" name="parentName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number:</label>
+                        <input type="tel" id="phone" name="phone" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="grade">Applying for Grade:</label>
+                        <select id="grade" name="grade" required>
+                            <option value="">Select Grade</option>
+                            <option value="KG">Kindergarten</option>
+                            <option value="1">Grade 1</option>
+                            <option value="2">Grade 2</option>
+                            <option value="3">Grade 3</option>
+                            <option value="4">Grade 4</option>
+                            <option value="5">Grade 5</option>
+                            <option value="6">Grade 6</option>
+                            <option value="7">Grade 7</option>
+                            <option value="8">Grade 8</option>
+                            <option value="9">Grade 9</option>
+                            <option value="10">Grade 10</option>
+                            <option value="11">Grade 11</option>
+                            <option value="12">Grade 12</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="message">Additional Comments:</label>
+                        <textarea id="message" name="message" rows="5"></textarea>
+                    </div>
+                    <button type="submit" class="btn">Submit Application</button>
+                    <div id="admission-response-message" class="response-message" style="display: none;"></div>
+                </form>
+            </div>
+        </section>
+
+        <section id="contact">
+            <div class="container">
+                <h2>Contact Us</h2>
+                <p style="text-align: center; max-width: 800px; margin: 0 auto 30px;">
+                    Have questions? We're here to help! Reach out to us through the form below or visit our campus.
+                </p>
+                <form id="contact-form">
+                    <div class="form-group">
+                        <label for="contact-name">Your Name:</label>
+                        <input type="text" id="contact-name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-email">Your Email:</label>
+                        <input type="email" id="contact-email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-subject">Subject:</label>
+                        <input type="text" id="contact-subject" name="subject" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="contact-message">Message:</label>
+                        <textarea id="contact-message" name="message" rows="7" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">Send Message</button>
+                    <div id="contact-response-message" class="response-message" style="display: none;"></div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2023 Aditya School. All rights reserved.</p>
+            <p>Address: 123 School Lane, Education City, AD 12345</p>
+            <p>Phone: (123) 456-7890 | Email: info@adityaschool.org</p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Basic Database Schema (for backend context) ---
+        /*
+        This is a conceptual schema for a full-stack Aditya School application backend.
+
+        Schema Name: aditya_school_db
+
+        Tables:
+
+        1.  **Users**
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `username` (VARCHAR(50), UNIQUE, NOT NULL)
+            -   `email` (VARCHAR(100), UNIQUE, NOT NULL)
+            -   `password_hash` (VARCHAR(255), NOT NULL)
+            -   `role` (ENUM('admin', 'teacher', 'student', 'parent'), NOT NULL)
+            -   `created_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+            -   `updated_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP)
+
+        2.  **Students**
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `user_id` (INT, UNIQUE, FOREIGN KEY REFERENCES Users(id))
+            -   `first_name` (VARCHAR(50), NOT NULL)
+            -   `last_name` (VARCHAR(50), NOT NULL)
+            -   `student_id` (VARCHAR(20), UNIQUE, NOT NULL) // School-assigned ID
+            -   `date_of_birth` (DATE)
+            -   `grade_level` (INT)
+            -   `class_id` (INT, FOREIGN KEY REFERENCES Classes(id))
+            -   `enrollment_date` (DATE)
+            -   `parent_id` (INT, FOREIGN KEY REFERENCES Parents(id)) // If Parents is a separate table/role
+
+        3.  **Teachers**
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `user_id` (INT, UNIQUE, FOREIGN KEY REFERENCES Users(id))
+            -   `first_name` (VARCHAR(50), NOT NULL)
+            -   `last_name` (VARCHAR(50), NOT NULL)
+            -   `employee_id` (VARCHAR(20), UNIQUE, NOT NULL)
+            -   `department` (VARCHAR(100))
+            -   `qualification` (VARCHAR(255))
+            -   `date_of_joining` (DATE)
+
+        4.  **Classes** (or Courses)
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `name` (VARCHAR(100), NOT NULL) // e.g., "Grade 5 A", "Algebra I"
+            -   `description` (TEXT)
+            -   `teacher_id` (INT, FOREIGN KEY REFERENCES Teachers(id))
+            -   `grade_level` (INT) // Associated grade level for easier filtering
+
+        5.  **Admissions**
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `student_first_name` (VARCHAR(50), NOT NULL)
+            -   `student_last_name` (VARCHAR(50), NOT NULL)
+            -   `parent_first_name` (VARCHAR(50), NOT NULL)
+            -   `parent_last_name` (VARCHAR(50), NOT NULL)
+            -   `email` (VARCHAR(100), NOT NULL)
+            -   `phone_number` (VARCHAR(20))
+            -   `grade_applying_for` (VARCHAR(10), NOT NULL)
+            -   `additional_comments` (TEXT)
+            -   `application_date` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+            -   `status` (ENUM('pending', 'reviewed', 'approved', 'rejected'), DEFAULT 'pending')
+            -   `decision_date` (DATE)
+
+        6.  **ContactMessages**
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `name` (VARCHAR(100), NOT NULL)
+            -   `email` (VARCHAR(100), NOT NULL)
+            -   `subject` (VARCHAR(255))
+            -   `message` (TEXT, NOT NULL)
+            -   `received_at` (TIMESTAMP, DEFAULT CURRENT_TIMESTAMP)
+            -   `is_read` (BOOLEAN, DEFAULT FALSE)
+
+        7.  **Grades** (Student performance)
+            -   `id` (INT, PRIMARY KEY, AUTO_INCREMENT)
+            -   `student_id` (INT, FOREIGN KEY REFERENCES Students(id))
+            -   `class_id` (INT, FOREIGN KEY REFERENCES Classes(id))
+            -   `assignment_name` (VARCHAR(255))
+            -   `score` (DECIMAL(5,2))
+            -   `max_score` (DECIMAL(5,2))
+            -   `grade_date` (DATE)
+
+        Relationships:
+        -   One User can have one associated Student/Teacher record (1-to-1)
+        -   One Teacher can teach multiple Classes (1-to-Many)
+        -   One Class can have many Students (Many-to-Many via a `StudentClasses` or implicitly by `class_id` in Students)
+        -   One Student can have many Grades (1-to-Many)
+        -   Admissions and ContactMessages are independent entry points.
+        */
+        // --- End Database Schema ---
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const backendUrl = 'http://localhost:5001/api/data';
+            const timeoutDuration = 3000; // 3 seconds timeout for backend requests
+
+            const showMessage = (element, message, type) => {
+                element.textContent = message;
+                element.className = 'response-message ' + type;
+                element.style.display = 'block';
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000); // Hide after 5 seconds
+            };
+
+            // --- Backend Data Demo ---
+            const backendDataButton = document.getElementById('backend-data-button');
+            if (backendDataButton) {
+                backendDataButton.addEventListener('click', async (event) => {
+                    event.preventDefault();
+                    await fetchDataFromBackend();
+                });
+            }
+
+            async function fetchDataFromBackend() {
+                console.log('Attempting to fetch data from backend...');
+                const statusMessageElement = document.createElement('div');
+                statusMessageElement.id = 'backend-status-message';
+                statusMessageElement.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #ffe08a; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;';
+                document.body.appendChild(statusMessageElement);
+
+                try {
+                    statusMessageElement.textContent = 'Fetching data...';
+                    statusMessageElement.style.backgroundColor = '#ffe08a'; // Yellow for pending
+
+                    const controller = new AbortController();
+                    const id = setTimeout(() => controller.abort(), timeoutDuration);
+
+                    const response = await fetch(backendUrl, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(id);
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Data from backend:', data);
+                    statusMessageElement.textContent = `Backend Data Received: ${JSON.stringify(data.message || data)}`;
+                    statusMessageElement.style.backgroundColor = '#d4edda'; // Green for success
+                } catch (error) {
+                    console.error('Error fetching data:', error);
+                    statusMessageElement.textContent = `Error: Backend unavailable or request timed out. ${error.name === 'AbortError' ? 'Request timed out.' : error.message}`;
+                    statusMessageElement.style.backgroundColor = '#f8d7da'; // Red for error
+                } finally {
+                    setTimeout(() => {
+                        if (statusMessageElement.parentNode) {
+                            statusMessageElement.parentNode.removeChild(statusMessageElement);
+                        }
+                    }, 7000); // Remove message after a longer period
+                }
+            }
+
+            async function sendDataToBackend(endpoint, dataToSend, responseElementId) {
+                const responseElement = document.getElementById(responseElementId);
+                const originalBtnText = responseElement.previousElementSibling.textContent;
+                responseElement.previousElementSibling.textContent = 'Submitting...';
+                responseElement.previousElementSibling.disabled = true;
+
+                try {
+                    const controller = new AbortController();
+                    const id = setTimeout(() => controller.abort(), timeoutDuration);
+
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(dataToSend),
+                        signal: controller.signal
+                    });
+
+                    clearTimeout(id);
+
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Backend response:', data);
+                    showMessage(responseElement, data.message || 'Submission successful!', 'success');
+                } catch (error) {
+                    console.error('Error sending data:', error);
+                    let errorMessage = `Submission failed. Backend unavailable or request timed out.`;
+                    if (error.name !== 'AbortError') {
+                        errorMessage = `Submission failed: ${error.message}`;
+                    }
+                    showMessage(responseElement, errorMessage, 'error');
+                } finally {
+                    responseElement.previousElementSibling.textContent = originalBtnText;
+                    responseElement.previousElementSibling.disabled = false;
+                }
+            }
+
+            // --- Contact Form Submission ---
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const formData = new FormData(contactForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    // Simulate sending data to backend (using the /api/data endpoint as specified)
+                    await sendDataToBackend(backendUrl, { type: 'contact_message', ...data }, 'contact-response-message');
+                    contactForm.reset(); // Reset form on success or attempted submission
+                });
+            }
+
+            // --- Admission Form Submission ---
+            const admissionForm = document.getElementById('admission-form');
+            if (admissionForm) {
+                admissionForm.addEventListener('submit', async (event) => {
+                    event.preventDefault();
+                    const formData = new FormData(admissionForm);
+                    const data = Object.fromEntries(formData.entries());
+
+                    // Simulate sending data to backend (using the /api/data endpoint as specified)
+                    await sendDataToBackend(backendUrl, { type: 'admission_application', ...data }, 'admission-response-message');
+                    admissionForm.reset(); // Reset form on success or attempted submission
+                });
+            }
+
+            // --- Smooth Scrolling for Navigation ---
+            document.querySelectorAll('nav ul li a').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href').substring(1);
+                    const targetElement = document.getElementById(targetId);
+
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - (document.querySelector('header').offsetHeight || 0), // Adjust for fixed header
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
