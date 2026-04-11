@@ -588,159 +588,165 @@
         // --- End Database Schema ---
 
         document.addEventListener('DOMContentLoaded', () => {
-            const backendUrl = 'http://localhost:5001/api/data';
-            const timeoutDuration = 3000; // 3 seconds timeout for backend requests
+  // Use relative URLs so it works on localhost and Render
+  const DATA_URL = '/api/data';
+  const MESSAGES_URL = '/api/messages';
+  const timeoutDuration = 3000; // 3 seconds timeout
 
-            const showMessage = (element, message, type) => {
-                element.textContent = message;
-                element.className = 'response-message ' + type;
-                element.style.display = 'block';
-                setTimeout(() => {
-                    element.style.display = 'none';
-                }, 5000); // Hide after 5 seconds
-            };
+  const showMessage = (element, message, type) => {
+    element.textContent = message;
+    element.className = 'response-message ' + type;
+    element.style.display = 'block';
+    setTimeout(() => {
+      element.style.display = 'none';
+    }, 5000);
+  };
 
-            // --- Backend Data Demo ---
-            const backendDataButton = document.getElementById('backend-data-button');
-            if (backendDataButton) {
-                backendDataButton.addEventListener('click', async (event) => {
-                    event.preventDefault();
-                    await fetchDataFromBackend();
-                });
-            }
+  // --- Backend Data Demo (GET /api/data) ---
+  const backendDataButton = document.getElementById('backend-data-button');
+  if (backendDataButton) {
+    backendDataButton.addEventListener('click', async (event) => {
+      event.preventDefault();
+      await fetchDataFromBackend();
+    });
+  }
 
-            async function fetchDataFromBackend() {
-                console.log('Attempting to fetch data from backend...');
-                const statusMessageElement = document.createElement('div');
-                statusMessageElement.id = 'backend-status-message';
-                statusMessageElement.style.cssText = 'position: fixed; top: 10px; right: 10px; background: #ffe08a; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;';
-                document.body.appendChild(statusMessageElement);
+  async function fetchDataFromBackend() {
+    console.log('Attempting to fetch data from backend...');
+    const statusMessageElement = document.createElement('div');
+    statusMessageElement.id = 'backend-status-message';
+    statusMessageElement.style.cssText =
+      'position: fixed; top: 10px; right: 10px; background: #ffe08a; padding: 10px 20px; border-radius: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); z-index: 1000;';
+    document.body.appendChild(statusMessageElement);
 
-                try {
-                    statusMessageElement.textContent = 'Fetching data...';
-                    statusMessageElement.style.backgroundColor = '#ffe08a'; // Yellow for pending
+    try {
+      statusMessageElement.textContent = 'Fetching data...';
+      statusMessageElement.style.backgroundColor = '#ffe08a';
 
-                    const controller = new AbortController();
-                    const id = setTimeout(() => controller.abort(), timeoutDuration);
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeoutDuration);
 
-                    const response = await fetch(backendUrl, {
-                        method: 'GET',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        signal: controller.signal
-                    });
+      const response = await fetch(DATA_URL, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: controller.signal,
+      });
 
-                    clearTimeout(id);
+      clearTimeout(id);
 
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
-                    }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
+      }
 
-                    const data = await response.json();
-                    console.log('Data from backend:', data);
-                    statusMessageElement.textContent = `Backend Data Received: ${JSON.stringify(data.message || data)}`;
-                    statusMessageElement.style.backgroundColor = '#d4edda'; // Green for success
-                } catch (error) {
-                    console.error('Error fetching data:', error);
-                    statusMessageElement.textContent = `Error: Backend unavailable or request timed out. ${error.name === 'AbortError' ? 'Request timed out.' : error.message}`;
-                    statusMessageElement.style.backgroundColor = '#f8d7da'; // Red for error
-                } finally {
-                    setTimeout(() => {
-                        if (statusMessageElement.parentNode) {
-                            statusMessageElement.parentNode.removeChild(statusMessageElement);
-                        }
-                    }, 7000); // Remove message after a longer period
-                }
-            }
+      const data = await response.json();
+      console.log('Data from backend:', data);
+      statusMessageElement.textContent =
+        `Backend Data Received: ${JSON.stringify(data)}`;
+      statusMessageElement.style.backgroundColor = '#d4edda';
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      statusMessageElement.textContent =
+        `Error: Backend unavailable or request timed out. ${
+          error.name === 'AbortError' ? 'Request timed out.' : error.message
+        }`;
+      statusMessageElement.style.backgroundColor = '#f8d7da';
+    } finally {
+      setTimeout(() => {
+        if (statusMessageElement.parentNode) {
+          statusMessageElement.parentNode.removeChild(statusMessageElement);
+        }
+      }, 7000);
+    }
+  }
 
-            async function sendDataToBackend(endpoint, dataToSend, responseElementId) {
-                const responseElement = document.getElementById(responseElementId);
-                const originalBtnText = responseElement.previousElementSibling.textContent;
-                responseElement.previousElementSibling.textContent = 'Submitting...';
-                responseElement.previousElementSibling.disabled = true;
+  // --- Generic POST helper (used by contact + admission) ---
+  async function sendDataToBackend(endpoint, dataToSend, responseElementId) {
+    const responseElement = document.getElementById(responseElementId);
+    const button = responseElement.previousElementSibling;
+    const originalBtnText = button.textContent;
 
-                try {
-                    const controller = new AbortController();
-                    const id = setTimeout(() => controller.abort(), timeoutDuration);
+    button.textContent = 'Submitting...';
+    button.disabled = true;
 
-                    const response = await fetch(endpoint, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(dataToSend),
-                        signal: controller.signal
-                    });
+    try {
+      const controller = new AbortController();
+      const id = setTimeout(() => controller.abort(), timeoutDuration);
 
-                    clearTimeout(id);
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(dataToSend),
+        signal: controller.signal,
+      });
 
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
-                        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.message}`);
-                    }
+      clearTimeout(id);
 
-                    const data = await response.json();
-                    console.log('Backend response:', data);
-                    showMessage(responseElement, data.message || 'Submission successful!', 'success');
-                } catch (error) {
-                    console.error('Error sending data:', error);
-                    let errorMessage = `Submission failed. Backend unavailable or request timed out.`;
-                    if (error.name !== 'AbortError') {
-                        errorMessage = `Submission failed: ${error.message}`;
-                    }
-                    showMessage(responseElement, errorMessage, 'error');
-                } finally {
-                    responseElement.previousElementSibling.textContent = originalBtnText;
-                    responseElement.previousElementSibling.disabled = false;
-                }
-            }
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.error || errorData.message}`);
+      }
 
-            // --- Contact Form Submission ---
-            const contactForm = document.getElementById('contact-form');
-            if (contactForm) {
-                contactForm.addEventListener('submit', async (event) => {
-                    event.preventDefault();
-                    const formData = new FormData(contactForm);
-                    const data = Object.fromEntries(formData.entries());
+      const data = await response.json();
+      console.log('Backend response:', data);
+      showMessage(responseElement, data.message || 'Submission successful!', 'success');
+    } catch (error) {
+      console.error('Error sending data:', error);
+      let errorMessage = 'Submission failed. Backend unavailable or request timed out.';
+      if (error.name !== 'AbortError') {
+        errorMessage = `Submission failed: ${error.message}`;
+      }
+      showMessage(responseElement, errorMessage, 'error');
+    } finally {
+      button.textContent = originalBtnText;
+      button.disabled = false;
+    }
+  }
 
-                    // Simulate sending data to backend (using the /api/data endpoint as specified)
-                    await sendDataToBackend(backendUrl, { type: 'contact_message', ...data }, 'contact-response-message');
-                    contactForm.reset(); // Reset form on success or attempted submission
-                });
-            }
+  // --- Contact Form: POST /api/messages (Mongo) ---
+  const contactForm = document.getElementById('contact-form');
+  if (contactForm) {
+    contactForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(contactForm);
+      const data = Object.fromEntries(formData.entries());
 
-            // --- Admission Form Submission ---
-            const admissionForm = document.getElementById('admission-form');
-            if (admissionForm) {
-                admissionForm.addEventListener('submit', async (event) => {
-                    event.preventDefault();
-                    const formData = new FormData(admissionForm);
-                    const data = Object.fromEntries(formData.entries());
+      // send to Mongo-backed /api/messages
+      await sendDataToBackend(MESSAGES_URL, data, 'contact-response-message');
+      contactForm.reset();
+    });
+  }
 
-                    // Simulate sending data to backend (using the /api/data endpoint as specified)
-                    await sendDataToBackend(backendUrl, { type: 'admission_application', ...data }, 'admission-response-message');
-                    admissionForm.reset(); // Reset form on success or attempted submission
-                });
-            }
+  // --- Admission Form: still demo -> POST /api/data (in-memory) ---
+  const admissionForm = document.getElementById('admission-form');
+  if (admissionForm) {
+    admissionForm.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const formData = new FormData(admissionForm);
+      const data = Object.fromEntries(formData.entries());
 
-            // --- Smooth Scrolling for Navigation ---
-            document.querySelectorAll('nav ul li a').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('href').substring(1);
-                    const targetElement = document.getElementById(targetId);
+      // demo: store admission applications in /api/data
+      await sendDataToBackend(DATA_URL, { type: 'admission_application', ...data }, 'admission-response-message');
+      admissionForm.reset();
+    });
+  }
 
-                    if (targetElement) {
-                        window.scrollTo({
-                            top: targetElement.offsetTop - (document.querySelector('header').offsetHeight || 0), // Adjust for fixed header
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
+  // --- Smooth Scrolling for Navigation ---
+  document.querySelectorAll('nav ul li a').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const targetId = this.getAttribute('href').substring(1);
+      const targetElement = document.getElementById(targetId);
+
+      if (targetElement) {
+        window.scrollTo({
+          top: targetElement.offsetTop - (document.querySelector('header').offsetHeight || 0),
+          behavior: 'smooth',
         });
+      }
+    });
+  });
+});
     </script>
 </body>
 </html>
